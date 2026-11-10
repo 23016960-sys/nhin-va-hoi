@@ -1,0 +1,22 @@
+{
+  "models/yolov5s.onnx": {
+    "source": "https://github.com/ultralytics/yolov5/releases/download/v7.0/yolov5s.onnx",
+    "bytes": 14698981,
+    "sha256": "8bc25a47abdbe2fd23e30eb948746bf856b031ea3cc815166687f52db9f8c659"
+  },
+  "models/LICENSE-YOLOv5.txt": {
+    "source": "https://raw.githubusercontent.com/ultralytics/yolov5/v7.0/LICENSE",
+    "bytes": 35127,
+    "sha256": "7fa7e56c0db71105f4b59a6a0ac40225eb059876f85cd380383f7d7a066e68be"
+  },
+  "samples/bus.jpg": {
+    "source": "https://raw.githubusercontent.com/ultralytics/assets/main/im/bus.jpg",
+    "bytes": 137419,
+    "sha256": "c02019c4979c191eb739ddd944445ef408dad5679acab6fd520ef9d434bfbc63"
+  },
+  "samples/LICENSE-Ultralytics.txt": {
+    "source": "https://raw.githubusercontent.com/ultralytics/assets/main/LICENSE",
+    "bytes": 34523,
+    "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+  }
+}

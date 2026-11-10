@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nhìn & Hỏi — Hỏi về người trong ảnh</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><rect width=%2240%22 height=%2240%22 rx=%2212%22 fill=%22%231c6f63%22/><circle cx=%2220%22 cy=%2220%22 r=%2210%22 fill=%22white%22/><circle cx=%2220%22 cy=%2220%22 r=%225%22 fill=%22%231c6f63%22/></svg>">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Nhìn và Hỏi, trang chủ"><span class="brand-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M4 16c3-6 7-9 12-9s9 3 12 9c-3 6-7 9-12 9S7 22 4 16Z" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="currentColor"/></svg></span><span>nhìn<span class="brand-and">&</span>hỏi</span><span class="brand-tag">VISUAL QUESTION ANSWERING</span></a>
+    <div class="local-pill"><span class="status-dot"></span><span id="readyLabel">Đang kết nối…</span></div>
+  </header>
+  <main>
+    <section class="intro">
+      <div class="eyebrow"><span></span> TỪ HÌNH ẢNH ĐẾN CÂU TRẢ LỜI</div>
+      <h1>Một bức ảnh.<br> <span>Nhiều điều để hỏi.</span></h1>
+      <p>Tải ảnh lên và hỏi bằng tiếng Việt về người, vị trí hoặc màu trang phục.</p>
+    </section>
+    <div class="workspace">
+      <section class="image-panel panel" aria-label="Ảnh và người được phát hiện">
+        <div class="panel-head"><div><span class="step">01</span><h2>Ảnh của bạn</h2></div><button id="changeImage" class="text-button hidden" type="button">Đổi ảnh ↗</button></div>
+        <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        <div id="dropZone" class="dropzone" tabindex="0" role="button" aria-label="Chọn hoặc kéo ảnh vào đây">
+          <div class="upload-illustration"><svg viewBox="0 0 96 96" fill="none"><rect x="15" y="14" width="66" height="68" rx="14" fill="#e6efeb" stroke="#99b8ac" stroke-width="1.5"/><circle cx="35" cy="36" r="7" fill="#7aab95"/><path d="m22 69 18-20 12 11 10-13 14 22" stroke="#40806b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="76" cy="75" r="16" fill="#236c5c"/><path d="M76 82V68m-5 5 5-5 5 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>Thả một bức ảnh vào đây</h3><p>Hoặc bấm để chọn từ máy</p>
+          <span class="primary-button">Chọn ảnh <span>↗</span></span><small>JPG, PNG, WebP · tối đa 8 MB</small>
+        </div>
+        <div id="imageStage" class="image-stage hidden"><div class="image-wrap"><img id="mainImage" alt="Ảnh đã tải lên"><svg id="boxes" aria-label="Các khung người có thể chọn"></svg></div><div id="analyzing" class="analyzing hidden"><div class="spinner"></div><span>Đang quan sát bức ảnh…</span></div></div>
+        <div id="imageMeta" class="image-meta hidden"><span id="imageStats"></span><span>Bấm khung để chọn người</span></div>
+        <div class="sample-row"><span>Chưa có ảnh để thử?</span><button id="demoButton" class="sample-button" type="button"><img src="{{ url_for('static', filename='sample-thumb.jpg') }}" alt="Ảnh mẫu đường phố">Dùng ảnh mẫu <span>→</span></button></div>
+        <div class="privacy-note"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2 3 5v5c0 4 7 8 7 8s7-4 7-8V5l-7-3Z" stroke="currentColor" stroke-width="1.5"/><path d="m7 10 2 2 4-4" stroke="currentColor" stroke-width="1.5"/></svg>{% if public_deployment %}Ảnh được gửi tới máy chủ để xử lý và chỉ giữ tạm trong bộ nhớ phiên. Không ghi ảnh thành file.{% else %}Ảnh được xử lý trên máy và giữ tạm trong phiên làm việc.{% endif %}</div>
+      </section>
+      <section class="conversation-panel panel" aria-label="Hỏi đáp về ảnh">
+        <div class="panel-head"><div><span class="step">02</span><h2>Hỏi điều bạn muốn biết</h2></div><button id="exportButton" class="icon-button" disabled title="Tải lịch sử hỏi đáp" aria-label="Tải lịch sử hỏi đáp"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2v10m-4-4 4 4 4-4M3 13v4h14v-4" stroke="currentColor" stroke-width="1.5"/></svg></button></div>
+        <div id="messages" class="messages" aria-live="polite">
+          <div class="welcome"><div class="sparkle">✳</div><h3>Bắt đầu bằng một câu hỏi.</h3><p>Sau khi tải ảnh, hãy thử hỏi màu áo,<br>đếm người hoặc tìm người theo trang phục.</p></div>
+        </div>
+        <div id="selection" class="selection hidden"><span id="selectionLabel"></span><button id="clearSelection" aria-label="Bỏ chọn người" type="button">×</button></div>
+        <div class="question-area"><div class="suggestions"><button data-question="Trong ảnh có bao nhiêu người?">Có bao nhiêu người?</button><button data-question="Người bên trái mặc áo màu gì?">Màu áo bên trái?</button><button data-question="Mô tả tất cả mọi người">Mô tả trang phục</button></div><form id="questionForm"><textarea id="questionInput" rows="2" maxlength="500" placeholder="Ví dụ: Người số 2 mặc áo màu gì?" aria-label="Câu hỏi về ảnh" disabled></textarea><button id="sendButton" type="submit" aria-label="Gửi câu hỏi" disabled><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 14-7-5 14-3-6-6-1Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></button></form><div class="composer-note">Enter để gửi · Shift + Enter để xuống dòng</div></div>
+      </section>
+    </div>
+    <section id="peopleSection" class="people-section hidden"><div class="section-head"><div><span class="eyebrow">QUAN SÁT TRONG ẢNH</span><h2 id="peopleHeading">Những người đã phát hiện</h2></div><p>Đánh số từ trái sang phải. Màu sắc là ước lượng từ vùng trang phục.</p></div><div id="peopleGrid" class="people-grid"></div></section>
+    <div id="notice" class="notice hidden" role="alert"></div>
+  </main>
+  <footer><span>NHÌN & HỎI <b> / </b> Dự án xử lý ngôn ngữ tự nhiên & thị giác máy tính</span><span>Tiếng Việt · {% if public_deployment %}Xử lý trên máy chủ{% else %}Xử lý tại máy{% endif %}</span></footer>
+</div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

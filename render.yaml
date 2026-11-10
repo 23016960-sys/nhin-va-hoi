@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: nhin-va-hoi
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-render.txt && python download_assets.py --render
+    startCommand: gunicorn -c gunicorn.conf.py wsgi:app
+    healthCheckPath: /healthz
+    envVars:
+      - key: PUBLIC_DEPLOYMENT
+        value: "1"
+      - key: MAX_SESSIONS
+        value: "3"
+      - key: OMP_NUM_THREADS
+        value: "2"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"
