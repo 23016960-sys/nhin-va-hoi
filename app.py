@@ -3,8 +3,6 @@ from collections import OrderedDict
 import threading,time,uuid,os
 from flask import Flask,request,jsonify,render_template
 from werkzeug.exceptions import RequestEntityTooLarge
-from vision import read_image,analyze_image,PersonDetector
-from nlu import QuestionParser
 from reasoning import answer_question
 
 ROOT=Path(__file__).resolve().parent
@@ -16,12 +14,22 @@ def create_app():
     app.config['PUBLIC_DEPLOYMENT']=os.environ.get('PUBLIC_DEPLOYMENT','0')=='1'
     max_sessions=max(1,int(os.environ.get('MAX_SESSIONS','10')))
     sessions=OrderedDict();session_lock=threading.Lock()
-    parser=QuestionParser();detector=None;init_lock=threading.Lock()
+    parser=None;detector=None;init_lock=threading.Lock()
+
+    def get_parser():
+        nonlocal parser
+        with init_lock:
+            if parser is None:
+                from nlu import QuestionParser
+                parser=QuestionParser()
+        return parser
 
     def get_detector():
         nonlocal detector
         with init_lock:
-            if detector is None:detector=PersonDetector()
+            if detector is None:
+                from vision import PersonDetector
+                detector=PersonDetector()
         return detector
 
     def purge():
@@ -31,6 +39,7 @@ def create_app():
         while len(sessions)>max_sessions:sessions.popitem(last=False)
 
     def process(payload):
+        from vision import read_image,analyze_image
         rgb=read_image(payload);analysis=analyze_image(rgb,get_detector())
         sid=uuid.uuid4().hex
         with session_lock:
@@ -85,7 +94,7 @@ def create_app():
         selected=body.get('selected_person')
         if selected is not None and (type(selected) is not int or selected<1):
             return jsonify(error='Số người được chọn không hợp lệ.'),400
-        started=time.perf_counter();plan=parser.parse(question)
+        started=time.perf_counter();plan=get_parser().parse(question)
         result=answer_question(session[1],plan,selected)
         result['elapsed_ms']=round((time.perf_counter()-started)*1000,1)
         return jsonify(result)
